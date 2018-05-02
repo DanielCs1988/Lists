@@ -119,7 +119,6 @@ public class DynamicArray<T> implements List<T> {
         System.arraycopy(c.toArray(), 0, buffer, size, newPartSize);
         data = buffer;
         size += newPartSize;
-        ArrayList<Integer> x = new ArrayList<>();
         return true;
     }
 

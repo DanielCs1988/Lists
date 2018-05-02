@@ -7,6 +7,10 @@ public class DoublyLinkedList<E> implements List<E> {
     private Link<E> firstElement;
     private int size;
 
+    DoublyLinkedList(Collection<? extends E> collection) {
+        addAll(collection);
+    }
+
     @Override
     public int size() {
         return size;
@@ -50,32 +54,62 @@ public class DoublyLinkedList<E> implements List<E> {
 
     @Override
     public boolean remove(Object o) {
+        Iterator<E> iter = iterator();
+        while (iter.hasNext()) {
+            if (iter.next().equals(o)) {
+                iter.remove();
+                return true;
+            }
+        }
         return false;
     }
 
     @Override
     public boolean containsAll(Collection<?> c) {
-        return false;
+        boolean found;
+        for (Object o : c) {
+            found = false;
+            for (Object elem : this) {
+                if (elem.equals(o)) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
     public boolean addAll(Collection<? extends E> c) {
-        return false;
+        for (E elem : c) {
+            add(elem);
+        }
+        return true;
     }
 
     @Override
     public boolean addAll(int index, Collection<? extends E> c) {
-        return false;
+        ListIterator<E> iter = setIteratorToIndex(index);
+        for (E elem : c) {
+            iter.add(elem);
+        }
+        return true;
     }
 
     @Override
     public boolean removeAll(Collection<?> c) {
-        return false;
+        Set<?> checkList = new HashSet<>(c);
+        // Alternative to the implementation used in singly linked list.
+        return removeIf(checkList::contains);
     }
 
     @Override
     public boolean retainAll(Collection<?> c) {
-        return false;
+        Set<?> checkList = new HashSet<>(c);
+        return removeIf(elem -> !checkList.contains(elem));
     }
 
     @Override

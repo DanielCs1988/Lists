@@ -8,10 +8,8 @@ public class SinglyLinkedList<E> implements List<E> {
     private Link<E> firstElement;
     private int size;
 
-    SinglyLinkedList(Iterable<E> iterable) {
-        for (E elem : iterable) {
-            add(elem);
-        }
+    SinglyLinkedList(Collection<? extends E> collection) {
+        addAll(collection);
     }
 
     SinglyLinkedList() {}
@@ -79,6 +77,7 @@ public class SinglyLinkedList<E> implements List<E> {
     }
 
     public E remove(int index) {
+        // TODO: FIX INDEX
         ListIter iter = setIteratorToIndex(index);
         return iter.pop();
     }
@@ -120,10 +119,9 @@ public class SinglyLinkedList<E> implements List<E> {
 
     @Override
     public List<E> subList(int fromIndex, int toIndex) {
-        checkIfIndexValid(fromIndex);
         checkIfIndexValid(toIndex);
-        List<E> subList = new ArrayList<>();
         ListIterator<E> iter = setIteratorToIndex(fromIndex);
+        List<E> subList = new ArrayList<>();
 
         for (int i = 0; i < toIndex - fromIndex; i++) {
             subList.add(iter.next());
@@ -147,34 +145,70 @@ public class SinglyLinkedList<E> implements List<E> {
         return null;
     }
 
-    @Override
     public boolean remove(Object o) {
+        Iterator<E> iter = iterator();
+        while (iter.hasNext()) {
+            if (iter.next().equals(o)) {
+                iter.remove();
+                return true;
+            }
+        }
         return false;
     }
 
     @Override
     public boolean containsAll(Collection<?> c) {
-        return false;
+        boolean found;
+        for (Object o : c) {
+            found = false;
+            for (Object elem : this) {
+                if (elem.equals(o)) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
     public boolean addAll(Collection<? extends E> c) {
-        return false;
+        for (E elem : c) {
+            add(elem);
+        }
+        return true;
     }
 
     @Override
     public boolean addAll(int index, Collection<? extends E> c) {
-        return false;
+        ListIterator<E> iter = setIteratorToIndex(index);
+        for (E elem : c) {
+            iter.add(elem);
+        }
+        return true;
     }
 
     @Override
     public boolean removeAll(Collection<?> c) {
-        return false;
+        Set<?> checkList = new HashSet<>(c);
+        Iterator<E> iter = iterator();
+        boolean removed = false;
+        while (iter.hasNext()) {
+            if (checkList.contains(iter.next())) {
+                iter.remove();
+                removed = true;
+            }
+        }
+        return removed;
     }
 
     @Override
     public boolean retainAll(Collection<?> c) {
-        return false;
+        Set<?> checkList = new HashSet<>(c);
+        return removeIf(elem -> !checkList.contains(elem));
     }
 
     @Override
@@ -202,10 +236,10 @@ public class SinglyLinkedList<E> implements List<E> {
 
     private Link<E> link(E newElem, Link<E> prevLink, Link<E> nextLink) {
         Link<E> newLink = new Link<>(newElem);
-        if (prevLink != null) {
-            prevLink.next = newLink;
-        } else {
+        if (prevLink == null) {
             firstElement = newLink;
+        } else {
+            prevLink.next = newLink;
         }
         newLink.next = nextLink;
         size ++;
