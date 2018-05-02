@@ -3,18 +3,18 @@ package com.danielcs88.datastructures;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class SingleLinkList <T> implements List<T> {
+public class SinglyLinkedList<E> implements List<E> {
 
-    private Link<T> firstElement;
+    private Link<E> firstElement;
     private int size;
 
-    SingleLinkList(Iterable<T> iterable) {
-        for (T elem : iterable) {
+    SinglyLinkedList(Iterable<E> iterable) {
+        for (E elem : iterable) {
             add(elem);
         }
     }
 
-    SingleLinkList() {}
+    SinglyLinkedList() {}
 
     public int size() {
         return size;
@@ -27,7 +27,7 @@ public class SingleLinkList <T> implements List<T> {
 
     @Override
     public boolean contains(Object o) {
-        for (T elem : this) {
+        for (E elem : this) {
             if (elem.equals(o)) {
                 return true;
             }
@@ -40,14 +40,6 @@ public class SingleLinkList <T> implements List<T> {
         return this.stream()
                 .map(String::valueOf)
                 .collect(Collectors.joining(", "));
-    }
-
-    public ArrayList<T> toList() {
-        return new ArrayList<>(this);
-    }
-
-    public T getFirst() {
-        return firstElement.self;
     }
 
     private ListIter setIteratorToIndex(int index) {
@@ -63,37 +55,30 @@ public class SingleLinkList <T> implements List<T> {
         if (index < 0 || index >= size) throw new IndexOutOfBoundsException();
     }
 
-    public T get(int index) {
-        ListIterator<T> iter = setIteratorToIndex(index - 1);
+    public E get(int index) {
+        ListIterator<E> iter = setIteratorToIndex(index - 1);
         return iter.next();
     }
 
     @Override
-    public T set(int index, T element) {
-        checkIfIndexValid(index);
-        ListIterator<T> iter = setIteratorToIndex(index);
+    public E set(int index, E element) {
+        ListIterator<E> iter = setIteratorToIndex(index);
         iter.set(element);
         return element;
     }
 
     @Override
-    public boolean add(T t) {
-        link(t, null, firstElement);
+    public boolean add(E e) {
+        link(e, null, firstElement);
         return true;
     }
 
-    public void add(int index, T elem) {
-        checkIfIndexValid(index);
-        ListIterator<T> iter = setIteratorToIndex(index);
-        iter.add(elem);
+    public void add(int index, E element) {
+        ListIterator<E> iter = setIteratorToIndex(index);
+        iter.add(element);
     }
 
-    public T removeFirst() {
-        return unlink(firstElement, null);
-    }
-
-    public T remove(int index) {
-        checkIfIndexValid(index);
+    public E remove(int index) {
         ListIter iter = setIteratorToIndex(index);
         return iter.pop();
     }
@@ -101,7 +86,7 @@ public class SingleLinkList <T> implements List<T> {
     @Override
     public int indexOf(Object o) {
         int counter = 0;
-        for (T elem : this) {
+        for (E elem : this) {
             if (elem.equals(o)) {
                 return counter;
             }
@@ -114,7 +99,7 @@ public class SingleLinkList <T> implements List<T> {
     public int lastIndexOf(Object o) {
         int counter = 0;
         int lastIndex = -1;
-        for (T elem : this) {
+        for (E elem : this) {
             if (elem.equals(o)) {
                 lastIndex = counter;
             }
@@ -124,22 +109,21 @@ public class SingleLinkList <T> implements List<T> {
     }
 
     @Override
-    public ListIterator<T> listIterator() {
+    public ListIterator<E> listIterator() {
         return new ListIter();
     }
 
     @Override
-    public ListIterator<T> listIterator(int index) {
-        checkIfIndexValid(index);
+    public ListIterator<E> listIterator(int index) {
         return setIteratorToIndex(index);
     }
 
     @Override
-    public List<T> subList(int fromIndex, int toIndex) {
+    public List<E> subList(int fromIndex, int toIndex) {
         checkIfIndexValid(fromIndex);
         checkIfIndexValid(toIndex);
-        List<T> subList = new ArrayList<>();
-        ListIterator<T> iter = setIteratorToIndex(fromIndex);
+        List<E> subList = new ArrayList<>();
+        ListIterator<E> iter = setIteratorToIndex(fromIndex);
 
         for (int i = 0; i < toIndex - fromIndex; i++) {
             subList.add(iter.next());
@@ -148,7 +132,7 @@ public class SingleLinkList <T> implements List<T> {
     }
 
     @Override
-    public Iterator<T> iterator() {
+    public Iterator<E> iterator() {
         return new Iter();
     }
 
@@ -159,6 +143,7 @@ public class SingleLinkList <T> implements List<T> {
 
     @Override
     public <T1> T1[] toArray(T1[] a) {
+        // TODO
         return null;
     }
 
@@ -173,12 +158,12 @@ public class SingleLinkList <T> implements List<T> {
     }
 
     @Override
-    public boolean addAll(Collection<? extends T> c) {
+    public boolean addAll(Collection<? extends E> c) {
         return false;
     }
 
     @Override
-    public boolean addAll(int index, Collection<? extends T> c) {
+    public boolean addAll(int index, Collection<? extends E> c) {
         return false;
     }
 
@@ -194,7 +179,7 @@ public class SingleLinkList <T> implements List<T> {
 
     @Override
     public void clear() {
-        Iterator<T> iter = iterator();
+        Iterator<E> iter = iterator();
         while (iter.hasNext()) {
             iter.next();
             iter.remove();
@@ -202,21 +187,21 @@ public class SingleLinkList <T> implements List<T> {
         firstElement = null;
     }
 
-    private T unlink(Link<T> linkToRemove, Link<T> prevLink) {
+    private E unlink(Link<E> linkToRemove, Link<E> prevLink) {
         if (prevLink == null) {
             firstElement = firstElement.next;
         } else {
             prevLink.next = linkToRemove.next;
         }
-        T retVal = linkToRemove.self;
+        E retVal = linkToRemove.self;
         linkToRemove.next = null;
         linkToRemove.self = null;
         size --;
         return retVal;
     }
 
-    private void link(T newElem, Link<T> prevLink, Link<T> nextLink) {
-        Link<T> newLink = new Link<>(newElem);
+    private Link<E> link(E newElem, Link<E> prevLink, Link<E> nextLink) {
+        Link<E> newLink = new Link<>(newElem);
         if (prevLink != null) {
             prevLink.next = newLink;
         } else {
@@ -224,13 +209,14 @@ public class SingleLinkList <T> implements List<T> {
         }
         newLink.next = nextLink;
         size ++;
+        return newLink;
     }
 
-    private class Iter implements Iterator<T> {
+    private class Iter implements Iterator<E> {
 
-        protected Link<T> next;
-        protected Link<T> current;
-        protected Link<T> prev;
+        Link<E> next;
+        Link<E> current;
+        Link<E> prev;
 
         Iter() {
             next = firstElement;
@@ -242,7 +228,7 @@ public class SingleLinkList <T> implements List<T> {
         }
 
         @Override
-        public T next() {
+        public E next() {
             prev = current;
             current = next;
             next = next.next;
@@ -253,17 +239,17 @@ public class SingleLinkList <T> implements List<T> {
         public void remove() {
             if (current == null) throw new NoSuchElementException();
             unlink(current, prev);
-            current = next;
+            current = null;
         }
     }
 
-    private class ListIter extends Iter implements ListIterator<T> {
+    private class ListIter extends Iter implements ListIterator<E> {
 
         private int index;
 
         @Override
-        public T next() {
-            T retVal = super.next();
+        public E next() {
+            E retVal = super.next();
             index ++;
             return retVal;
         }
@@ -274,7 +260,7 @@ public class SingleLinkList <T> implements List<T> {
         }
 
         @Override
-        public T previous() {
+        public E previous() {
             return null;
         }
 
@@ -289,35 +275,36 @@ public class SingleLinkList <T> implements List<T> {
         }
 
         @Override
-        public void set(T t) {
+        public void set(E e) {
             if (current == null) throw new NoSuchElementException();
-            current.self = t;
+            current.self = e;
         }
 
         @Override
-        public void add(T elem) {
+        public void add(E elem) {
             if (current == null) throw new NoSuchElementException();
-            link(elem, prev, current);
+            prev = current;
+            current = link(elem, current, next);
         }
 
-        public T pop() {
+        public E pop() {
             if (current == null) throw new NoSuchElementException();
-            T retVal = unlink(current, prev);
+            E retVal = unlink(current, prev);
             current = next;
             return retVal;
         }
     }
 
-    private final class Link <X> {
+    private final class Link <T> {
 
-        private Link<X> next;
-        private X self;
+        private Link<T> next;
+        private T self;
 
-        Link(X element) {
+        Link(T element) {
             self = element;
         }
 
-        Link(X element, Link<X> next) {
+        Link(T element, Link<T> next) {
             self = element;
             this.next = next;
         }

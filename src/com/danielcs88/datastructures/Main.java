@@ -10,7 +10,7 @@ public class Main {
     }
 
     private static void testSequenceList() {
-        List<Integer> testList = new SequenceList<>();
+        List<Integer> testList = new DynamicArray<>();
         for (int i = 0; i < 10; i++) {
             testList.add(i);
         }
@@ -21,7 +21,7 @@ public class Main {
     }
 
     private static void testLinkedList() {
-        List<Integer> testList = new SingleLinkList<>(Arrays.asList(
+        List<Integer> testList = new SinglyLinkedList<>(Arrays.asList(
                 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
         ));
 

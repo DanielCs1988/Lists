@@ -3,7 +3,7 @@ package com.danielcs88.datastructures;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class SequenceList <T> implements List<T> {
+public class DynamicArray<T> implements List<T> {
 
     private static final int INITIAL_SIZE = 10;
     private static final int EXPANSION_MULTIPLIER = 2;
@@ -11,11 +11,11 @@ public class SequenceList <T> implements List<T> {
     private int size;
     private Object[] data;
 
-    public SequenceList() {
+    public DynamicArray() {
         data = new Object[INITIAL_SIZE];
     }
 
-    public SequenceList(Collection<T> collection) {
+    public DynamicArray(Collection<T> collection) {
         Object[] temp = collection.toArray();
         size = temp.length;
         int size = this.size > INITIAL_SIZE ? this.size : INITIAL_SIZE;
