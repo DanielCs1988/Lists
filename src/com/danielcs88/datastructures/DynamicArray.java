@@ -3,7 +3,7 @@ package com.danielcs88.datastructures;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class DynamicArray<T> implements List<T> {
+public class DynamicArray<E> implements List<E> {
 
     private static final int INITIAL_SIZE = 10;
     private static final int EXPANSION_MULTIPLIER = 2;
@@ -15,7 +15,7 @@ public class DynamicArray<T> implements List<T> {
         data = new Object[INITIAL_SIZE];
     }
 
-    public DynamicArray(Collection<T> collection) {
+    public DynamicArray(Collection<E> collection) {
         Object[] temp = collection.toArray();
         size = temp.length;
         int size = this.size > INITIAL_SIZE ? this.size : INITIAL_SIZE;
@@ -42,7 +42,7 @@ public class DynamicArray<T> implements List<T> {
     }
 
     @Override
-    public Iterator<T> iterator() {
+    public Iterator<E> iterator() {
         return new Iter();
     }
 
@@ -64,7 +64,7 @@ public class DynamicArray<T> implements List<T> {
     }
 
     @Override
-    public boolean add(T newElem) {
+    public boolean add(E newElem) {
         resizeArrayIfNeeded();
         data[size++] = newElem;
         return true;
@@ -109,7 +109,7 @@ public class DynamicArray<T> implements List<T> {
     }
 
     @Override
-    public boolean addAll(Collection<? extends T> c) {
+    public boolean addAll(Collection<? extends E> c) {
         Object[] buffer = data;
         int newPartSize = c.size();
         if (size + newPartSize > data.length) {
@@ -123,7 +123,7 @@ public class DynamicArray<T> implements List<T> {
     }
 
     @Override
-    public boolean addAll(int index, Collection<? extends T> c) {
+    public boolean addAll(int index, Collection<? extends E> c) {
         checkIfIndexValid(index);
         Object[] buffer = data;
         int newPartSize = c.size();
@@ -162,21 +162,21 @@ public class DynamicArray<T> implements List<T> {
     }
 
     @Override
-    public T get(int index) {
+    public E get(int index) {
         checkIfIndexValid(index);
         // It IS safe, because the class itself is type-bound.
-        return (T)data[index];
+        return (E)data[index];
     }
 
     @Override
-    public T set(int index, T element) {
+    public E set(int index, E element) {
         checkIfIndexValid(index);
         data[index] = element;
         return element;
     }
 
     @Override
-    public void add(int index, T element) {
+    public void add(int index, E element) {
         checkIfIndexValid(index);
         resizeArrayIfNeeded();
         System.arraycopy(data, index, data, index + 1, size - index);
@@ -185,9 +185,9 @@ public class DynamicArray<T> implements List<T> {
     }
 
     @Override
-    public T remove(int index) {
+    public E remove(int index) {
         checkIfIndexValid(index);
-        T temp = (T)data[index];
+        E temp = (E)data[index];
         System.arraycopy(data, index + 1, data, index, size - index - 1);
         size--;
         return temp;
@@ -211,22 +211,22 @@ public class DynamicArray<T> implements List<T> {
     }
 
     @Override
-    public ListIterator<T> listIterator() {
+    public ListIterator<E> listIterator() {
         return new ListIter();
     }
 
     @Override
-    public ListIterator<T> listIterator(int index) {
+    public ListIterator<E> listIterator(int index) {
         return new ListIter(index);
     }
 
     @Override
-    public List<T> subList(int fromIndex, int toIndex) {
+    public List<E> subList(int fromIndex, int toIndex) {
         checkIfIndexValid(fromIndex);
         checkIfIndexValid(toIndex);
         // May need extra check if from is greater than to.
         Object[] subArray = Arrays.copyOfRange(data, fromIndex, toIndex);
-        return Arrays.asList((T[])subArray);
+        return Arrays.asList((E[])subArray);
     }
 
     private void checkIfIndexValid(int index) {
@@ -240,7 +240,7 @@ public class DynamicArray<T> implements List<T> {
                 .collect(Collectors.joining(", "));
     }
 
-    private class Iter implements Iterator<T> {
+    private class Iter implements Iterator<E> {
 
         protected int index;
 
@@ -250,7 +250,7 @@ public class DynamicArray<T> implements List<T> {
         }
 
         @Override
-        public T next() {
+        public E next() {
             return get(index++);
         }
 
@@ -262,7 +262,7 @@ public class DynamicArray<T> implements List<T> {
         }
     }
 
-    private class ListIter extends Iter implements ListIterator<T> {
+    private class ListIter extends Iter implements ListIterator<E> {
 
         ListIter(){}
 
@@ -276,7 +276,7 @@ public class DynamicArray<T> implements List<T> {
         }
 
         @Override
-        public T previous() {
+        public E previous() {
             return get(index++);
         }
 
@@ -291,15 +291,15 @@ public class DynamicArray<T> implements List<T> {
         }
 
         @Override
-        public void set(T t) {
-            data[index] = t;
+        public void set(E e) {
+            data[index] = e;
         }
 
         @Override
-        public void add(T t) {
+        public void add(E e) {
             resizeArrayIfNeeded();
             System.arraycopy(data, index, data, index + 1, size - index);
-            data[index] = t;
+            data[index] = e;
             size++;
         }
     }

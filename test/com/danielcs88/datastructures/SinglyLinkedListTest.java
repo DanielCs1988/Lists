@@ -114,11 +114,16 @@ class SinglyLinkedListTest {
     }
 
     @Test
-    void toArray() {
+    void testToArray() {
+        String expected = "[a, b, c, d, e, f, g, h, i, j]";
+        assertEquals(expected, Arrays.toString(list.toArray()));
     }
 
     @Test
-    void toArray1() {
+    void testToTypedArray() {
+        String expected = "[a, b, c, d, e, f, g, h, i, j]";
+        String[] arr = list.toArray(new String[0]);
+        assertEquals(expected, Arrays.toString(arr));
     }
 
     @Test
@@ -141,21 +146,21 @@ class SinglyLinkedListTest {
     }
 
     @Test
-    void removeAll() {
+    void testRemoveAll() {
         list.removeAll(Arrays.asList("a", "c", "f", "j"));
         String expected = "b, d, e, g, h, i";
         assertEquals(expected, list.toString());
     }
 
     @Test
-    void retainAll() {
+    void testRetainAll() {
         list.retainAll(Arrays.asList("a", "c", "f"));
         String expected = "a, c, f";
         assertEquals(expected, list.toString());
     }
 
     @Test
-    void clear() {
+    void testClear() {
         list.clear();
         assertTrue(list.isEmpty());
     }

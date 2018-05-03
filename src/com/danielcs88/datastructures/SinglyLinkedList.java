@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 
 public class SinglyLinkedList<E> implements List<E> {
 
-    private Link<E> firstElement;
+    private Link<E> head;
     private int size;
 
     public SinglyLinkedList(Collection<? extends E> collection) {
@@ -54,7 +54,7 @@ public class SinglyLinkedList<E> implements List<E> {
     }
 
     public E get(int index) {
-        return index == 0 ? firstElement.self : setIteratorToIndex(index).current.self;
+        return index == 0 ? head.self : setIteratorToIndex(index).current.self;
     }
 
     @Override
@@ -66,7 +66,7 @@ public class SinglyLinkedList<E> implements List<E> {
 
     @Override
     public boolean add(E e) {
-        link(e, null, firstElement);
+        link(e, null, head);
         return true;
     }
 
@@ -134,13 +134,23 @@ public class SinglyLinkedList<E> implements List<E> {
 
     @Override
     public Object[] toArray() {
-        return new Object[0];
+        Object[] arr = new Object[size];
+        int index = 0;
+        for (E elem : this) {
+            arr[index++] = elem;
+        }
+        return arr;
     }
 
     @Override
+    @SuppressWarnings({"unchecked", "SuspiciousSystemArraycopy"})
     public <T1> T1[] toArray(T1[] a) {
-        // TODO
-        return null;
+        Object[] buffer = toArray();
+        if (a.length < size) {
+            return (T1[])Arrays.copyOf(buffer, size, a.getClass());
+        }
+        System.arraycopy(buffer, 0, a, 0, size);
+        return a;
     }
 
     public boolean remove(Object o) {
@@ -216,12 +226,12 @@ public class SinglyLinkedList<E> implements List<E> {
             iter.next();
             iter.remove();
         }
-        firstElement = null;
+        head = null;
     }
 
     private E unlink(Link<E> linkToRemove, Link<E> prevLink) {
-        if (linkToRemove == firstElement) {
-             firstElement = firstElement.next;
+        if (linkToRemove == head) {
+             head = head.next;
         } else {
             prevLink.next = linkToRemove.next;
         }
@@ -235,7 +245,7 @@ public class SinglyLinkedList<E> implements List<E> {
     private Link<E> link(E newElem, Link<E> prevLink, Link<E> nextLink) {
         Link<E> newLink = new Link<>(newElem);
         if (prevLink == null) {
-            firstElement = newLink;
+            head = newLink;
         } else {
             prevLink.next = newLink;
         }
@@ -251,7 +261,7 @@ public class SinglyLinkedList<E> implements List<E> {
         Link<E> prev;
 
         Iter() {
-            next = firstElement;
+            next = head;
         }
 
         @Override

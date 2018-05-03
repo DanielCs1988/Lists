@@ -5,7 +5,8 @@ import java.util.stream.Collectors;
 
 public class DoublyLinkedList<E> implements List<E> {
 
-    private Link<E> firstElement;
+    private Link<E> head;
+    private Link<E> tail;
     private int size;
 
     public DoublyLinkedList(Collection<? extends E> collection) {
@@ -42,17 +43,28 @@ public class DoublyLinkedList<E> implements List<E> {
 
     @Override
     public Object[] toArray() {
-        return new Object[0];
+        Object[] arr = new Object[size];
+        int index = 0;
+        for (E elem : this) {
+            arr[index++] = elem;
+        }
+        return arr;
     }
 
     @Override
-    public <T> T[] toArray(T[] a) {
-        return null;
+    @SuppressWarnings({"unchecked", "SuspiciousSystemArraycopy"})
+    public <T1> T1[] toArray(T1[] a) {
+        Object[] buffer = toArray();
+        if (a.length < size) {
+            return (T1[])Arrays.copyOf(buffer, size, a.getClass());
+        }
+        System.arraycopy(buffer, 0, a, 0, size);
+        return a;
     }
 
     @Override
     public boolean add(E e) {
-        link(e, null, firstElement);
+        link(e, null, head);
         return true;
     }
 
@@ -123,12 +135,12 @@ public class DoublyLinkedList<E> implements List<E> {
             iter.next();
             iter.remove();
         }
-        firstElement = null;
+        head = null;
     }
 
     @Override
     public E get(int index) {
-        return index == 0 ? firstElement.self : setIteratorToIndex(index).current.self;
+        return index == 0 ? tail.self : setIteratorToIndex(index).current.self;
     }
 
     @Override
@@ -219,11 +231,13 @@ public class DoublyLinkedList<E> implements List<E> {
 
     private E unlink(Link<E> link) {
         if (link.prev == null) {
-            firstElement = link.next;
+            head = link.next;
         } else {
             link.prev.next = link.next;
         }
-        if (link.next != null) {
+        if (link.next == null) {
+            tail = link.prev;
+        } else {
             link.next.prev = link.prev;
         }
 
@@ -238,11 +252,13 @@ public class DoublyLinkedList<E> implements List<E> {
     private Link<E> link(E newElem, Link<E> prevLink, Link<E> nextLink) {
         Link<E> newLink = new Link<>(newElem, prevLink, nextLink);
         if (prevLink == null) {
-            firstElement = newLink;
+            head = newLink;
         } else {
             prevLink.next = newLink;
         }
-        if (nextLink != null) {
+        if (nextLink == null) {
+            tail = newLink;
+        } else {
             nextLink.prev = newLink;
         }
         size ++;
@@ -255,7 +271,7 @@ public class DoublyLinkedList<E> implements List<E> {
         Link<E> current;
 
         Iter() {
-            next = firstElement;
+            next = tail;
         }
 
         @Override
@@ -266,7 +282,7 @@ public class DoublyLinkedList<E> implements List<E> {
         @Override
         public E next() {
             current = next;
-            next = next.next;
+            next = next.prev;
             return current.self;
         }
 
@@ -291,7 +307,7 @@ public class DoublyLinkedList<E> implements List<E> {
 
         @Override
         public boolean hasPrevious() {
-            return current != null && current.prev != null;
+            return current != null && current.next != null;
         }
 
         @Override
@@ -319,7 +335,7 @@ public class DoublyLinkedList<E> implements List<E> {
         @Override
         public void add(E elem) {
             if (current == null) throw new NoSuchElementException();
-            current = link(elem, current, next);
+            current = link(elem, current, current.next);
         }
 
         public E pop() {
