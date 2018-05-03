@@ -1,14 +1,18 @@
 package com.danielcs88.datastructures;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class DoublyLinkedList<E> implements List<E> {
 
     private Link<E> firstElement;
     private int size;
 
-    DoublyLinkedList(Collection<? extends E> collection) {
+    public DoublyLinkedList(Collection<? extends E> collection) {
         addAll(collection);
+    }
+
+    public DoublyLinkedList() {
     }
 
     @Override
@@ -124,8 +128,7 @@ public class DoublyLinkedList<E> implements List<E> {
 
     @Override
     public E get(int index) {
-        ListIterator<E> iter = setIteratorToIndex(index - 1);
-        return iter.next();
+        return index == 0 ? firstElement.self : setIteratorToIndex(index).current.self;
     }
 
     @Override
@@ -184,16 +187,30 @@ public class DoublyLinkedList<E> implements List<E> {
 
     @Override
     public List<E> subList(int fromIndex, int toIndex) {
-        return null;
+        ListIter iter = setIteratorToIndex(fromIndex);
+        List<E> subList = new ArrayList<>();
+
+        for (int i = 0; i < toIndex - fromIndex; i++) {
+            subList.add(iter.current.self);
+            iter.next();
+        }
+        return subList;
     }
 
     private ListIter setIteratorToIndex(int index) {
         checkIfIndexValid(index);
         ListIter iter = new ListIter();
-        for (int i = 0; i < index; i++) {
+        for (int i = 0; i <= index; i++) {
             iter.next();
         }
         return iter;
+    }
+
+    @Override
+    public String toString() {
+        return this.stream()
+                .map(String::valueOf)
+                .collect(Collectors.joining(", "));
     }
 
     private void checkIfIndexValid(int index) {
@@ -206,7 +223,9 @@ public class DoublyLinkedList<E> implements List<E> {
         } else {
             link.prev.next = link.next;
         }
-        link.next.prev = link.prev;
+        if (link.next != null) {
+            link.next.prev = link.prev;
+        }
 
         E retVal = link.self;
         link.next = null;
@@ -223,7 +242,9 @@ public class DoublyLinkedList<E> implements List<E> {
         } else {
             prevLink.next = newLink;
         }
-        nextLink.prev = newLink;
+        if (nextLink != null) {
+            nextLink.prev = newLink;
+        }
         size ++;
         return newLink;
     }
@@ -319,7 +340,7 @@ public class DoublyLinkedList<E> implements List<E> {
             self = element;
         }
 
-        public Link(T self, Link<T> prev, Link<T> next) {
+        Link(T self, Link<T> prev, Link<T> next) {
             this.self = self;
             this.prev = prev;
             this.next = next;

@@ -8,11 +8,11 @@ public class SinglyLinkedList<E> implements List<E> {
     private Link<E> firstElement;
     private int size;
 
-    SinglyLinkedList(Collection<? extends E> collection) {
+    public SinglyLinkedList(Collection<? extends E> collection) {
         addAll(collection);
     }
 
-    SinglyLinkedList() {}
+    public SinglyLinkedList() {}
 
     public int size() {
         return size;
@@ -43,7 +43,7 @@ public class SinglyLinkedList<E> implements List<E> {
     private ListIter setIteratorToIndex(int index) {
         checkIfIndexValid(index);
         ListIter iter = new ListIter();
-        for (int i = 0; i < index; i++) {
+        for (int i = 0; i <= index; i++) {
             iter.next();
         }
         return iter;
@@ -54,8 +54,7 @@ public class SinglyLinkedList<E> implements List<E> {
     }
 
     public E get(int index) {
-        ListIterator<E> iter = setIteratorToIndex(index - 1);
-        return iter.next();
+        return index == 0 ? firstElement.self : setIteratorToIndex(index).current.self;
     }
 
     @Override
@@ -77,7 +76,6 @@ public class SinglyLinkedList<E> implements List<E> {
     }
 
     public E remove(int index) {
-        // TODO: FIX INDEX
         ListIter iter = setIteratorToIndex(index);
         return iter.pop();
     }
@@ -119,12 +117,12 @@ public class SinglyLinkedList<E> implements List<E> {
 
     @Override
     public List<E> subList(int fromIndex, int toIndex) {
-        checkIfIndexValid(toIndex);
-        ListIterator<E> iter = setIteratorToIndex(fromIndex);
+        ListIter iter = setIteratorToIndex(fromIndex);
         List<E> subList = new ArrayList<>();
 
         for (int i = 0; i < toIndex - fromIndex; i++) {
-            subList.add(iter.next());
+            subList.add(iter.current.self);
+            iter.next();
         }
         return subList;
     }
@@ -222,8 +220,8 @@ public class SinglyLinkedList<E> implements List<E> {
     }
 
     private E unlink(Link<E> linkToRemove, Link<E> prevLink) {
-        if (prevLink == null) {
-            firstElement = firstElement.next;
+        if (linkToRemove == firstElement) {
+             firstElement = firstElement.next;
         } else {
             prevLink.next = linkToRemove.next;
         }
@@ -263,7 +261,7 @@ public class SinglyLinkedList<E> implements List<E> {
 
         @Override
         public E next() {
-            prev = current;
+            if (current != null) prev = current;
             current = next;
             next = next.next;
             return current.self;
@@ -324,7 +322,7 @@ public class SinglyLinkedList<E> implements List<E> {
         public E pop() {
             if (current == null) throw new NoSuchElementException();
             E retVal = unlink(current, prev);
-            current = next;
+            current = null;
             return retVal;
         }
     }
